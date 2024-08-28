@@ -29,3 +29,5 @@ clean_temp:
 	rm *.o *.mod
 clean: 
 	rm *.o *.mod tabipb surface_potential.dat
+install:
+	cp tabipb ~/bin
