@@ -2,3 +2,8 @@
 *.o
 *.mod
 *.out
+.vscode
+.DS_Store
+*.dat
+*.xyzr
+tabipb

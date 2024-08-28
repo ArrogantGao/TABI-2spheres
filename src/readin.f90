@@ -1,11 +1,15 @@
 !Read sphere information then generate grids
-subroutine readin
+subroutine readin(Bisphere_pathname)
 use molecule
 use comdata
 use treecode
 implicit double precision(a-h,o-z)
+
+character(100) :: Bisphere_pathname
+
 real*8 pos(3),vector(3)
 integer nind(5)
+
 ! temp. var. for read in
 CHARACTER(100) :: FHEAD
 character(10) :: c1,c3,c4,c5,c6,c8
@@ -34,9 +38,8 @@ read(den,'(i1)') level
 
 
 !Obtain path
-pathname='2sphere_data/'
-lenpath = len(pathname)
-do while (pathname(lenpath:lenpath) .eq. ' ')
+lenpath = len(Bisphere_pathname)
+do while (Bisphere_pathname(lenpath:lenpath) .eq. ' ')
     lenpath = lenpath - 1
 enddo  
 
@@ -50,7 +53,7 @@ enddo
 
 if (imd==0) then
     nremark=0
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
     do
         READ(102,*) fhead
         if (fhead(1:6)=='REMARK') then
@@ -62,8 +65,8 @@ if (imd==0) then
     print *,'lines of remarks = ', nremark
     close(102)
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
-    open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
 
     do i=1,nremark
         read(102,*) fhead
@@ -92,7 +95,7 @@ if (imd==0) then
         STOP
     END IF
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
 
     do i=1,nremark
         read(102,*) fhead
@@ -107,10 +110,10 @@ if (imd==0) then
     enddo
     close(102)
 
-    rslt=system('msms -if '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
-    //den(1:5)//' -of '//pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
+    rslt=system('msms -if '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
+    //den(1:5)//' -of '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
       ! read the surface points
-    OPEN(102,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
+    OPEN(102,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
 
     READ(102,*) FHEAD
     READ(102,*) FHEAD
@@ -134,7 +137,7 @@ if (imd==0) then
 
 ! read the surface triangulization
 
-    OPEN(103,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".face")
+    OPEN(103,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".face")
 
     READ(103,*) FHEAD
     READ(103,*) FHEAD
@@ -156,9 +159,9 @@ if (imd==0) then
     call surface_area(s_area) ! the post-MSMS code
     print *,'surface area=', real(s_area)
 
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".vert")
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".face")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".vert")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".face")
 
 
 elseif (imd==1) then
@@ -171,7 +174,7 @@ elseif (imd==1) then
     write(*,*) 'rotation angles x,y,z: ',real(angle)
 
     nremark=0
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
     do
         READ(102,*) fhead
         if (fhead(1:6)=='REMARK') then
@@ -183,8 +186,8 @@ elseif (imd==1) then
     !print *,'lines of remarks = ', nremark
     close(102)
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
-    open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
 
     do i=1,nremark
         read(102,*) fhead
@@ -213,7 +216,7 @@ elseif (imd==1) then
         STOP
     END IF
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
 
     do i=1,nremark
         read(102,*) fhead
@@ -261,7 +264,7 @@ elseif (imd==1) then
         
     if (iflag_steric_clashes==1) then
         ! generate .xyzr file using dimer otherwise using monomer and its copy
-        open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+        open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
         do i=1,natm
             write(103,*) atmpos(1:3,i),atmrad(i)
         enddo
@@ -306,10 +309,10 @@ elseif (imd==1) then
         enddo
     endif
 
-    rslt=system('msms -if '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
-    //den(1:5)//' -of '//pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
+    rslt=system('msms -if '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
+    //den(1:5)//' -of '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
       ! read the surface points
-    OPEN(102,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
+    OPEN(102,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
 
     READ(102,*) FHEAD
     READ(102,*) FHEAD
@@ -333,7 +336,7 @@ elseif (imd==1) then
 
 ! read the surface triangulization
 
-    OPEN(103,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".face")
+    OPEN(103,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".face")
 
     READ(103,*) FHEAD
     READ(103,*) FHEAD
@@ -355,9 +358,9 @@ elseif (imd==1) then
     call surface_area(s_area) ! the post-MSMS code
     print *,'surface area=', real(s_area)
 
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".vert")
-    rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".face")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".vert")
+    rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".face")
 
     write(*,*) 'cube dimensions for monomer (w/o steric clashes) or dimmer (w/ steric clahes): '
     write(*,*) 'x: [ ',real(minval(sptpos(1,:))),real(maxval(sptpos(1,:))),']' 
@@ -435,7 +438,7 @@ elseif (imd==1) then
         nspt=2*nspt
     endif
         
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//".pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".pqr")
     open(103,file=fname(1:lenfname)//"_monomer1.pqr")
     open(104,file=fname(1:lenfname)//"_monomer2.pqr")
 
@@ -480,7 +483,7 @@ elseif (imd==1) then
 else            
     nremark1=0
     nremark2=0
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
     do
         READ(102,*) fhead
         if (fhead(1:6)=='REMARK') then
@@ -490,7 +493,7 @@ else
         endif
     enddo
     close(102)
-    open(103,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
+    open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
     do
         READ(103,*) fhead
         if (fhead(1:6)=='REMARK') then
@@ -501,7 +504,7 @@ else
     enddo
     close(103)
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
     do i=1,nremark1
         read(102,*) fhead
     enddo
@@ -518,7 +521,7 @@ else
     enddo
     close(102)
 
-    open(103,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
+    open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
     do i=1,nremark2
         read(103,*) fhead
     enddo
@@ -544,7 +547,7 @@ else
         STOP
     END IF
 
-    open(101,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
+    open(101,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph1.pqr")
     do i=1,nremark1
         read(101,*) fhead
     enddo
@@ -557,7 +560,7 @@ else
     enddo
     close(101)
 
-    open(102,file=pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
+    open(102,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//"_sph2.pqr")
     do i=1,nremark2
         read(102,*) fhead
     enddo
@@ -591,7 +594,7 @@ else
     102 continue
 
     if (iflag_steric_clashes==1) then
-        open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+        open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
         do i=1,natm1
              write(103,*) atmpos(1:3,i),atmrad(i)
         enddo
@@ -600,10 +603,10 @@ else
         enddo
         close(103)
 
-        rslt=system('msms -if '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
-        //den(1:5)//' -of '//pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
+        rslt=system('msms -if '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr"//' -prob 1.4 -de ' &
+        //den(1:5)//' -of '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//' > msms.out')    
         ! read the surface points
-        OPEN(102,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
+        OPEN(102,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".vert")
 
         READ(102,*) FHEAD
         READ(102,*) FHEAD
@@ -627,7 +630,7 @@ else
 
         ! read the surface triangulization
 
-        OPEN(103,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".face")
+        OPEN(103,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".face")
 
         READ(103,*) FHEAD
         READ(103,*) FHEAD
@@ -649,20 +652,20 @@ else
         call surface_area(s_area) ! the post-MSMS code
         print *,'surface area=', real(s_area)
 
-        rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
-        rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".vert")
-        rslt=system('rm '//pathname(1:lenpath)//fname(1:lenfname)//".face")
+        rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+        rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".vert")
+        rslt=system('rm '//Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".face")
 
 
     else !no steric clashes thus two monomers are generated by calling MSMS
-        open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+        open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
         do i=1,natm1
              write(103,*) atmpos(1:3,i),atmrad(i)
         enddo
 close(103)
 
 !Read atom coordinates and partial charges
-OPEN(1,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".xyzr")
+OPEN(1,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".xyzr")
 DO
 READ(1,*,IOSTAT = MEOF) xxx, yyy, zzz, rrr
 IF(MEOF .LT. 0) EXIT
@@ -759,7 +762,7 @@ end do
         STOP
         END IF
 
-        open(103,file=pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
+        open(103,file=Bisphere_pathname(1:lenpath)//fname(1:lenfname)//".xyzr")
         do j=1,natm2
              write(103,*) atmpos(1:3,j+natm1),atmrad(j+natm1)
         enddo
@@ -767,7 +770,7 @@ end do
 
         !again, do that with icosahedral grid (gan)
 !Read atom coordinates and partial charges
-OPEN(1,FILE=pathname(1:lenpath)//FNAME(1:lenfname)//".xyzr")
+OPEN(1,FILE=Bisphere_pathname(1:lenpath)//FNAME(1:lenfname)//".xyzr")
 DO
 READ(1,*,IOSTAT = MEOF) xxx, yyy, zzz, rrr
 IF(MEOF .LT. 0) EXIT

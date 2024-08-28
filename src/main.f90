@@ -20,7 +20,26 @@ external MATVEC, MSOLVE
 
 common // pi,one_over_4pi
 
-open(101,file="usrdata.in")
+! read in the command line args
+integer :: i, num_args
+character(len=100) :: arg
+character(len=100) :: usr_data_in
+character(len=100) :: sphere_dir
+
+call getarg(0, arg)
+num_args = command_argument_count()
+if (num_args /= 2) then
+    write(*,*) 'Usage: ./tabipb usr_data_in sphere_dir'
+    stop
+endif
+
+call getarg(1, arg)
+usr_data_in = trim(arg)
+call getarg(2, arg)
+sphere_dir = trim(arg)
+! read in the command line args
+
+open(101,file=usr_data_in)
 READ(101,*,IOSTAT = MEOF) fhead, eps0  !the dielectric constant in molecule
 READ(101,*,IOSTAT = MEOF) fhead, eps1  !the dielectric constant in solvent
 READ(101,*,IOSTAT = MEOF) fhead, bulk_strength !ion_strength with units (M)$I=\sum\limits_{i=1}^nc_iz_i^2$
@@ -49,7 +68,7 @@ para=332.0716                          !332.0716 in Kcal/mol unit
 eps=eps1/eps0;
 call cpu_time(cpu1)
 
-call readin
+call readin(sphere_dir)
 !write(*,*), tr_area(1)
 
 !print *,'check location',real(sptpos(:,700)),real(sptpos(:,1980))
